@@ -1,0 +1,14 @@
+/Capfile
+/config/deploy.rb
+/META.yml
+/MYMETA.json
+/MYMETA.yml
+/Makefile
+/Makefile.old
+/config/local.pl
+/inc/
+/local/
+/tmp/
+.carton/
+pm_to_blib
+blib
