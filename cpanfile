@@ -6,4 +6,5 @@ requires 'DBI', 1.627;
 requires 'DBD::mysql', 4.023;
 requires 'Net::OAuth', 0.28;
 requires 'Net::SSLeay', 1.51;
+requires 'Perl6::Say', 0.16;
 
