@@ -4,10 +4,11 @@ use AnyEvent::Twitter::Stream;
 use Encode qw/encode_utf8 decode_utf8/;
 
 sub new {
-    my ($class, $dbi) = @_;
+    my ($class, $dbi, $config) = @_;
 
     my $self = bless {}, $class;
     $self->{dbi} = $dbi;
+    $self->{config} = $config;
     return $self;
 }
 
@@ -50,7 +51,8 @@ sub on_tweet {
 }
 
 sub connect_twitter {
-    my $self = shift;
+    my ($self) = @_;
+    my $config = $self->{config};
     AnyEvent::Twitter::Stream->new(
         consumer_key    => $config->{consumer_key},
         consumer_secret => $config->{consumer_secret},
@@ -64,8 +66,7 @@ sub connect_twitter {
 }
 
 sub listen {
-    my ($self, $config) = @_;
-
+    my ($self) = @_;
     my $done = AE::cv;
     $self->{listener} = $self->connect_twitter();
     $done->recv;

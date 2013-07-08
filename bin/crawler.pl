@@ -15,7 +15,7 @@ my $dbi    = DBI->connect_cached(
         on_connect_do => ['SET NAMES utf8'],
     }
 );
-my $saver = TwitSave->new($dbi);
-$saver->listen($config);
+my $saver = TwitSave->new($dbi, $config);
+$saver->listen();
 
 1;
