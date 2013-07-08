@@ -11,6 +11,30 @@ sub new {
     return $self;
 }
 
+sub on_error {
+  my $self = shift;
+  return sub {
+    my $error = shift;
+    my $msg = "exited on error: $error";
+    terminate($msg);
+  }
+}
+
+sub on_eof {
+  my $self = shift;
+  return sub {
+    printf STDERR "reconnected on eof\n";
+    $self->{listener} = $self->connect_twitter();
+  }
+}
+
+sub terminate {
+  my $msg = shift;
+  printf STDERR "$msg\n";
+  exit 1;
+}
+
+
 sub on_tweet {
     my $self = shift;
     return sub {
@@ -25,19 +49,25 @@ sub on_tweet {
     }
 }
 
-sub listen {
-    my ($self, $config) = @_;
-
-    my $done = AE::cv;
-    my $listener = AnyEvent::Twitter::Stream->new(
+sub connect_twitter {
+    my $self = shift;
+    AnyEvent::Twitter::Stream->new(
         consumer_key    => $config->{consumer_key},
         consumer_secret => $config->{consumer_secret},
         token           => $config->{token},
         token_secret    => $config->{token_secret},
         method          => "sample",
         on_tweet        => \&{$self->on_tweet},
+        on_error        => \&{$self->on_error},
+        on_eof          => \&{$self->on_eof},
     );
-    $self->{listener} = $listener;
+}
+
+sub listen {
+    my ($self, $config) = @_;
+
+    my $done = AE::cv;
+    $self->{listener} = $self->connect_twitter();
     $done->recv;
 }
 
